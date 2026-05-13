@@ -1,0 +1,4 @@
+.env
+docs/
+chromadb/
+__pycache__/
