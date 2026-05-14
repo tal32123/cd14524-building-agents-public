@@ -182,14 +182,24 @@ class Agent:
 
     def get_session_runs(self, session_id: Optional[str] = None) -> List[Run]:
         """Get all Run objects for a session
-        
+
         Args:
             session_id: Optional session ID (uses "default" if None)
-            
+
         Returns:
             List of Run objects in the session
         """
         return self.memory.get_all_objects(session_id)
+
+    @staticmethod
+    def get_new_messages(run: Run) -> List:
+        """Return only the messages added during this run, excluding any
+        previous-session context that was carried into the initial state."""
+        if not run.snapshots:
+            return []
+        initial = run.snapshots[0].state_data.get("messages", []) or []
+        final = run.snapshots[-1].state_data.get("messages", []) or []
+        return final[len(initial):]
 
     def reset_session(self, session_id: Optional[str] = None):
         """Reset memory for a specific session
